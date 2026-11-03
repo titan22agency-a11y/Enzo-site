@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ENZO | رأيك يهمنا</title>
+<link rel="icon" href="logo-red.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1A1F;--body:#45454F;--muted:#5F5F6B;--line:#E6E6EA;--soft:#F5F5F7;--red:#C8102E;--crimson:#6E0F26}
+*{box-sizing:border-box}
+body{margin:0;font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;color:var(--ink);background:var(--soft);font-size:15px}
+button,input,textarea{font:inherit;color:inherit}
+h1,h2,p{margin:0}
+.hd{background:var(--crimson);padding:28px 20px 72px;text-align:center}
+.hd img{height:28px}
+.wrap{max-width:520px;margin:-48px auto 40px;padding:0 16px}
+.card{background:#fff;border-radius:22px;padding:28px 22px;box-shadow:0 20px 50px rgba(26,26,31,.08);display:flex;flex-direction:column;gap:26px}
+.intro h1{font-size:22px;font-weight:700;line-height:1.4}
+.intro p{color:var(--muted);margin-top:6px;font-size:14px}
+.q{display:flex;flex-direction:column;gap:12px;border:0;padding:0;margin:0}
+.q legend{font-weight:600;font-size:16px;padding:0;margin-bottom:12px;line-height:1.5}
+.stars{display:flex;gap:6px;justify-content:space-between;direction:ltr}
+.stars button{flex:1;height:56px;border-radius:14px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:26px;color:#C9C9D1;transition:transform .15s,border-color .2s,color .2s}
+.stars button.on{color:var(--red);border-color:var(--red)}
+.stars button:active{transform:scale(.94)}
+.scale-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.nps{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px;direction:ltr}
+.nps button{height:46px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;font-size:14px;padding:0}
+.nps button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:14px;padding:12px;resize:vertical}
+textarea:focus,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--body);line-height:1.6;cursor:pointer}
+.consent input{width:20px;height:20px;margin-top:3px;accent-color:var(--red);flex:none}
+.submit{height:54px;border-radius:999px;border:0;background:var(--ink);color:#fff;font-weight:600;font-size:16px;cursor:pointer;transition:background .2s}
+.submit:hover{background:var(--red)}
+.submit:disabled{background:#B8B8C2;cursor:not-allowed}
+.hidden{display:none!important}
+.err{color:var(--red);font-size:13px}
+.done{text-align:center;align-items:center}
+.done .ok{width:64px;height:64px;border-radius:999px;background:var(--red);display:flex;align-items:center;justify-content:center}
+.done p{color:var(--body);line-height:1.7}
+.done a{color:var(--red);font-weight:600}
+.foot{text-align:center;font-size:12px;color:var(--muted);margin-top:16px}
+@media (max-width:380px){.nps button{height:40px;font-size:13px}}
+</style>
+</head>
+<body>
+<header class="hd"><img src="logo-white.png" alt="ENZO"></header>
+<main class="wrap">
+  <form class="card" id="form" novalidate>
+    <div class="intro">
+      <h1 id="title">رأيك في تجربتك مع ENZO</h1>
+      <p id="sub">أقل من دقيقة. ردّك بيوصل لفريقنا مباشرة.</p>
+    </div>
+
+    <fieldset class="q" id="qCsat">
+      <legend>قيّمي تجربتك لحد دلوقتي (الطلب، والتوصيل، وأول استخدام)</legend>
+      <div class="stars" role="radiogroup" aria-label="التقييم من 1 لـ 5" id="csatStars"></div>
+      <div class="scale-labels"><span>وحشة جدًا</span><span>ممتازة</span></div>
+    </fieldset>
+
+    <fieldset class="q hidden" id="qResult">
+      <legend>شايفة فرق في بشرتك بعد الاستخدام؟</legend>
+      <div class="stars" role="radiogroup" aria-label="النتيجة من 1 لـ 5" id="resultStars"></div>
+      <div class="scale-labels"><span>مفيش فرق</span><span>فرق واضح</span></div>
+    </fieldset>
+
+    <fieldset class="q hidden" id="qNps">
+      <legend>إيه احتمال إنك ترشّحي ENZO لصاحبتك؟</legend>
+      <div class="nps" role="radiogroup" aria-label="من 0 لـ 10" id="npsRow"></div>
+      <div class="scale-labels"><span>مستحيل</span><span>أكيد</span></div>
+    </fieldset>
+
+    <fieldset class="q hidden" id="qReasons">
+      <legend>إيه اللي مكانش على قد توقعاتك؟ (اختاري كل اللي ينطبق)</legend>
+      <div class="chips" id="reasonChips"></div>
+    </fieldset>
+
+    <div class="q">
+      <label for="comment" style="font-weight:600;font-size:16px">عايزة تقولي حاجة تانية؟ <span style="font-weight:400;color:var(--muted);font-size:13px">(اختياري)</span></label>
+      <textarea id="comment" maxlength="600" placeholder="اكتبي هنا..."></textarea>
+    </div>
+
+    <label class="consent hidden" id="consentWrap"><input type="checkbox" id="consent"> موافقة إن ENZO تنشر تعليقي على الموقع باسمي الأول بس.</label>
+
+    <p class="err hidden" id="err" role="alert">اختاري التقييم الأول عشان نقدر نسجّل رأيك.</p>
+    <button class="submit" type="submit" id="submit">ابعتي رأيك</button>
+  </form>
+
+  <section class="card done hidden" id="done" aria-live="polite">
+    <div class="ok"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></div>
+    <h2 style="font-size:22px">شكرًا إنك شاركتينا رأيك</h2>
+    <p id="doneMsg"></p>
+    <a href="/">ارجعي للموقع</a>
+  </section>
+  <p class="foot" id="foot"></p>
+</main>
+
+<script>
+(function(){
+  var params=new URLSearchParams(location.search);
+  var orderId=(params.get('o')||'').slice(0,20).replace(/[^A-Za-z0-9-]/g,'');
+  var type=params.get('t')==='d21'?'d21':'d7';
+  var REASONS=['التوصيل','التغليف','النتيجة','سهولة الاستخدام','الريحة أو القوام','السعر','خدمة العملاء'];
+  var state={csat:null,result:null,nps:null,reasons:[]};
+  function $(s){return document.querySelector(s);}
+  function show(el,on){el.classList.toggle('hidden',!on);}
+
+  if(type==='d21'){
+    $('#title').textContent='3 أسابيع مع سيرم ENZO. إيه النتيجة؟';
+    show($('#qCsat'),false);show($('#qResult'),true);show($('#qNps'),true);show($('#consentWrap'),true);
+  }
+  $('#foot').textContent=orderId?('أوردر رقم '+orderId):'';
+
+  function starRow(el,key){
+    for(var i=1;i<=5;i++)(function(v){
+      var b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked','false');b.setAttribute('aria-label',v+' من 5');b.textContent='★';
+      b.onclick=function(){state[key]=v;Array.prototype.forEach.call(el.children,function(c,k){c.classList.toggle('on',k<v);c.setAttribute('aria-checked',k===v-1?'true':'false');});update();};
+      el.appendChild(b);
+    })(i);
+  }
+  starRow($('#csatStars'),'csat');starRow($('#resultStars'),'result');
+  for(var n=0;n<=10;n++)(function(v){
+    var b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked','false');b.textContent=v;
+    b.onclick=function(){state.nps=v;Array.prototype.forEach.call($('#npsRow').children,function(c,k){c.classList.toggle('on',k===v);c.setAttribute('aria-checked',k===v?'true':'false');});update();};
+    $('#npsRow').appendChild(b);
+  })(n);
+  REASONS.forEach(function(r){
+    var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=r;b.setAttribute('aria-pressed','false');
+    b.onclick=function(){var i=state.reasons.indexOf(r);if(i>-1)state.reasons.splice(i,1);else state.reasons.push(r);b.classList.toggle('on',i===-1);b.setAttribute('aria-pressed',i===-1?'true':'false');};
+    $('#reasonChips').appendChild(b);
+  });
+  function low(){return type==='d7'?(state.csat!=null&&state.csat<=3):((state.result!=null&&state.result<=3)||(state.nps!=null&&state.nps<=6));}
+  function update(){show($('#qReasons'),low());show($('#err'),false);}
+
+  $('#form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var ok=type==='d7'?state.csat!=null:(state.result!=null&&state.nps!=null);
+    if(!ok){$('#err').textContent=type==='d7'?'اختاري التقييم الأول عشان نقدر نسجّل رأيك.':'جاوبي على السؤالين الأولانيين عشان نقدر نسجّل رأيك.';show($('#err'),true);return;}
+    var entry={id:'fb-'+Date.now().toString(36),orderId:orderId||'بدون رقم',type:type,csat:type==='d7'?state.csat:null,result:type==='d21'?state.result:null,nps:type==='d21'?state.nps:null,reasons:low()?state.reasons.slice():[],comment:$('#comment').value.trim().slice(0,600),consent:type==='d21'&&$('#consent').checked,at:new Date().toISOString()};
+    var btn=$('#submit');btn.disabled=true;
+    var done=function(){$('#doneMsg').textContent=low()?'آسفين إن التجربة مكانتش زي ما تستاهلي. فريقنا هيتواصل معاكي قريب عشان نفهم حصل إيه.':'ردّك وصل لفريقنا وبيساعدنا نطوّر كل حاجة بنعملها.';show($('#form'),false);show($('#done'),true);window.scrollTo(0,0);};
+    if(orderId==='PREVIEW'){done();return;}
+    fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)})
+      .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'حصل خطأ');});})
+      .then(done).catch(function(x){btn.disabled=false;$('#err').textContent=x.message+'، جرّبي تاني.';show($('#err'),true);});
+    return;
+    show($('#form'),false);show($('#done'),true);window.scrollTo(0,0);
+  });
+})();
+</script>
+</body>
+</html>
