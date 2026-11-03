@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENZO | Daily Skin Care</title>
+<meta name="description" content="ENZO 4D Hyaluronic Acid 5% Skin Serum. Daily skin care with every ingredient on the label.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="logo-red.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1A1A1F;--body:#45454F;--muted:#5F5F6B;--line:#E6E6EA;--line2:#DCDCE2;--soft:#F5F5F7;--red:#C8102E;--crimson:#6E0F26;--pink:#F2B8C3}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--ink)}a:hover{color:var(--red)}
+img{max-width:100%}
+h1,h2,h3{font-family:Jost,sans-serif;font-weight:300;margin:0}
+p{margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--red)}
+.h2{font-size:clamp(32px,4vw,46px);line-height:1.1}
+.sec{padding:96px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:52px;padding:0 28px;border-radius:999px;border:0;background:var(--ink);color:#fff;font:500 15px Inter,sans-serif;text-decoration:none;cursor:pointer;transition:background .25s,color .25s,transform .2s}
+.btn:hover{background:var(--red);color:#fff}
+.btn:active{transform:scale(.97)}
+.btn.light{background:#fff;color:var(--ink)}
+.btn.outline{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+.btn.outline:hover,.btn.light:hover{background:var(--red);color:#fff}
+.btn.sm{height:48px;padding:0 24px;font-size:14px}
+.iconbtn{width:44px;height:44px;background:none;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:24px}
+
+/* announcement */
+.ann{background:var(--crimson);color:#fff;font-size:13px;height:40px;display:flex;align-items:center;justify-content:center;gap:16px;padding:0 12px}
+.ann button{width:32px;height:32px;background:none;border:0;color:#fff;cursor:pointer;font-size:16px}
+.ann span{text-align:center;animation:fadeUp .6s ease both}
+
+/* header */
+header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+.nav{flex:1 1 0;display:flex;align-items:center;gap:28px;font-size:14px;font-weight:500}
+.nav>a,.shop>a{position:relative;text-decoration:none;display:inline-block;padding:26px 0}
+.nav>a::after,.shop>a::after{content:"";position:absolute;left:0;right:0;bottom:20px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav>a:hover::after,.shop>a:hover::after{transform:scaleX(1)}
+.logo-slot{flex:0 0 140px;height:44px}
+.tools{flex:1 1 0;display:flex;align-items:center;justify-content:flex-end;gap:2px}
+.lang{font:500 13px Inter,sans-serif;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:0 14px;height:36px;cursor:pointer}
+.badge{min-width:20px;height:20px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.cartbtn{height:44px;padding:0 8px;background:none;border:0;cursor:pointer;display:flex;align-items:center;gap:6px}
+.burger{display:none}
+.shop{position:relative}
+.mega{display:none;position:absolute;top:100%;left:-24px;width:720px;max-width:92vw;z-index:40}
+.shop:hover .mega,.shop:focus-within .mega{display:block;animation:drop .28s ease both}
+.mega-in{background:#fff;border:1px solid var(--line);border-radius:0 0 20px 20px;box-shadow:0 20px 40px rgba(26,26,31,.1);padding:28px;display:flex;gap:32px}
+.mega-col{flex:1 1 150px;display:flex;flex-direction:column;gap:12px}
+.mega-col a{text-decoration:none}
+.mega-col p{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mega-feat{flex:1 1 220px;position:relative;border-radius:16px;overflow:hidden;min-height:190px;display:flex;align-items:flex-end;text-decoration:none;color:#fff;background:var(--crimson)}
+.mega-feat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mega-feat span{position:relative;width:100%;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.55));font-weight:500}
+.mega-feat:hover{color:#fff}
+
+/* big wordmark */
+.bigspace{background:#fff;border-bottom:1px solid var(--line)}
+#wordmark{position:fixed;z-index:35;left:50%;transform:translateX(-50%);display:block;will-change:top,width}
+#wordmark img{display:block;width:100%;height:auto}
+
+/* hero */
+.hero{position:relative;height:620px;overflow:hidden;background:var(--crimson)}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.slide.on{opacity:1;visibility:visible;z-index:2}
+.slide .wrap{height:100%;display:flex;align-items:center;gap:40px}
+.slide .txt{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:22px;opacity:0;transform:translateY(24px);transition:transform .9s ease .15s,opacity .9s ease .15s}
+.slide.on .txt{opacity:1;transform:none}
+.slide h1{font-size:clamp(40px,5vw,60px);line-height:1.05}
+.slide .lead{font-size:17px;line-height:1.6;max-width:460px;opacity:.85}
+.slide .vis{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:center;justify-content:center}
+.slide .vis img{transform:scale(1.06);transition:transform 1.4s ease}
+.slide.on .vis img{transform:scale(1)}
+.s1{background:var(--crimson);color:#fff}.s1 .eyebrow{color:var(--pink)}
+.s1 .vis img{height:100%;object-fit:cover}
+.s2{background:var(--soft);color:var(--ink)}
+.s2 .vis img{height:82%;object-fit:cover;border-radius:28px;box-shadow:0 30px 60px rgba(110,15,38,.25)}
+.s3{background:var(--ink);color:#fff}.s3 .eyebrow{color:var(--pink)}
+.s3 .vis img{width:80%;max-width:520px;opacity:.9}
+.hero-ctl{position:absolute;left:0;right:0;bottom:28px;display:flex;justify-content:center;align-items:center;gap:12px;z-index:5}
+.hero-ctl .arr{width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.15);color:#fff;cursor:pointer;font-size:18px}
+.dot{height:8px;width:8px;border-radius:999px;border:0;padding:0;cursor:pointer;background:rgba(255,255,255,.6);box-shadow:0 0 0 1px rgba(0,0,0,.15);transition:width .4s,background .4s}
+.dot.on{width:32px;background:var(--red)}
+
+/* marquee */
+.marq-wrap{background:var(--ink);color:#fff;overflow:hidden;padding:18px 0}
+.marq{display:flex;width:max-content;animation:marq 32s linear infinite}
+.marq-wrap:hover .marq{animation-play-state:paused}
+.marq span{font-family:Jost,sans-serif;font-weight:300;font-size:22px;letter-spacing:.04em;padding:0 28px;white-space:nowrap}
+.marq i{color:var(--red);font-style:normal;padding-left:28px}
+
+/* cards */
+.card{border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;background:#fff;transition:box-shadow .35s,transform .35s}
+.card:hover{box-shadow:0 18px 40px rgba(26,26,31,.12);transform:translateY(-4px)}
+.pimg{position:relative;height:440px;overflow:hidden}
+.pimg .i1,.pimg .i2{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s,transform .8s}
+.pimg .i2{opacity:0;object-position:center 70%}
+.card:hover .pimg .i1{opacity:0;transform:scale(1.04)}
+.card:hover .pimg .i2{opacity:1;transform:scale(1.04)}
+.tag{position:absolute;top:18px;left:18px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px}
+.wish{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:999px;background:rgba(255,255,255,.92);border:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wish.on svg path{fill:var(--red);stroke:var(--red)}
+.pbody{padding:24px;display:flex;flex-direction:column;gap:10px;flex:1}
+.kick{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pbody h3{font-weight:400;font-size:24px;line-height:1.2}
+.ben{font-size:14px;color:var(--red);font-weight:500}
+.desc{font-size:14px;line-height:1.6;color:var(--body)}
+.pfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:10px}
+.price{font-size:20px;font-weight:600}
+.pill{border:1px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500;align-self:flex-start}
+
+/* stats */
+.stat{flex:1 1 140px;background:#fff;border-radius:16px;padding:18px}
+.stat b{display:block;font-family:Jost,sans-serif;font-size:34px;font-weight:300;color:var(--red)}
+.stat span{font-size:13px;color:var(--body)}
+details summary{cursor:pointer;font-size:15px;font-weight:600}
+.inci{margin-top:12px;font-size:12px;line-height:1.7;color:var(--muted);letter-spacing:.02em}
+
+/* ingredient carousel */
+.track{display:flex;gap:20px;overflow-x:auto;padding:4px 24px 12px 0;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.track::-webkit-scrollbar{display:none}
+.ing{flex:0 0 300px;scroll-snap-align:start;border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:14px;min-height:260px;background:#fff;transition:box-shadow .35s,transform .35s}
+.ing:hover{box-shadow:0 18px 40px rgba(26,26,31,.12);transform:translateY(-4px)}
+.ing .n{font-family:Jost,sans-serif;font-size:15px;font-weight:500;color:var(--red)}
+.ing h3{font-weight:400;font-size:24px}
+.ing .role{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ing p.t{font-size:14px;line-height:1.65;color:var(--body)}
+.round{width:48px;height:48px;border-radius:999px;border:1px solid var(--line2);background:#fff;cursor:pointer;font-size:18px;color:var(--ink);transition:background .25s,color .25s}
+.round:hover{background:var(--red);color:#fff}
+
+/* steps */
+.step{flex:1 1 280px;min-width:0;border-top:1px solid rgba(255,255,255,.35);padding-top:22px;display:flex;flex-direction:column;gap:10px}
+.step b{font-family:Jost,sans-serif;font-size:52px;font-weight:300;line-height:1}
+.step h3{font-family:Inter,sans-serif;font-size:18px;font-weight:600}
+.step p{font-size:15px;line-height:1.6;color:#F3D9DE}
+
+.rev{flex:1 1 300px;min-width:0;border:1px solid var(--line);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:500}
+.field input{height:48px;border:1px solid var(--line2);border-radius:12px;padding:0 14px;font:15px Inter,sans-serif;background:#fff}
+.field input:focus{outline:2px solid var(--red);outline-offset:1px}
+
+/* faq */
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{width:100%;background:none;border:0;padding:22px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:pointer;font:500 17px Inter,sans-serif;color:var(--ink);text-align:left}
+.faq-q .pl{font-size:24px;font-weight:300;transition:transform .35s}
+.faq-item.open .pl{transform:rotate(45deg)}
+.faq-a{overflow:hidden;max-height:0;opacity:0;transition:max-height .45s ease,opacity .35s}
+.faq-item.open .faq-a{max-height:260px;opacity:1}
+.faq-a p{margin-bottom:22px;font-size:15px;line-height:1.65;color:var(--body)}
+
+footer{background:var(--ink);color:#B8B8C2}
+footer a{color:#B8B8C2;text-decoration:none}footer a:hover{color:#fff}
+.fcol{flex:1 1 160px;display:flex;flex-direction:column;gap:12px;font-size:14px}
+.fcol p{color:#fff;font-weight:600}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);width:320px;max-width:calc(100vw - 32px);background:var(--ink);color:#fff;border-radius:16px;padding:16px 20px;display:none;align-items:center;gap:12px;z-index:50;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.toast.show{display:flex;animation:toastIn .35s ease both}
+.toast .ok{width:28px;height:28px;border-radius:999px;background:var(--red);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.wa{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:999px;background:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(26,26,31,.28);z-index:45;transition:background .25s,transform .2s}
+.wa:hover{background:var(--red);transform:scale(1.06)}
+
+.rv{opacity:0;transform:translateY(32px);transition:opacity .8s ease,transform .8s ease}
+.rv.in{opacity:1;transform:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+
+@media (max-width:860px){
+  .nav{display:none}
+  .burger{display:flex}
+  .logo-slot{flex-basis:100px}
+  .hero{height:auto;min-height:640px}
+  .slide .wrap{flex-direction:column;justify-content:center;padding-top:40px;padding-bottom:90px;gap:24px}
+  .slide .vis{height:260px;flex:none;width:100%}
+  .slide .vis img{height:100%}
+  .pimg{height:360px}
+  .sec{padding:72px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="ann" role="region" aria-label="Announcements">
+  <button type="button" id="annPrev" aria-label="Previous message">‹</button>
+  <span id="annText" aria-live="polite">Free shipping on orders over [EGP AMOUNT]</span>
+  <button type="button" id="annNext" aria-label="Next message">›</button>
+</div>
+
+<header>
+  <div class="wrap hd">
+    <button type="button" class="iconbtn burger" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <nav class="nav" aria-label="Main">
+      <div class="shop">
+        <a href="#shop">Shop</a>
+        <div class="mega">
+          <div class="mega-in">
+            <div class="mega-col">
+              <p>Shop by concern</p>
+              <a href="#shop">Dehydration</a><a href="#shop">Dullness</a><a href="#shop">Fine lines</a><a href="#shop">Uneven tone</a><a href="#shop">Weak skin barrier</a>
+            </div>
+            <div class="mega-col">
+              <p>Shop by product</p>
+              <a href="#shop">Skin serum</a><a href="#shop">Hair serum <small style="color:var(--red)">Soon</small></a><a href="#shop">Shop all</a>
+            </div>
+            <a class="mega-feat" href="#shop"><img src="box.jpg" alt=""><span>Meet the 4D Skin Serum →</span></a>
+          </div>
+        </div>
+      </div>
+      <a href="#ingredients">Ingredients</a>
+      <a href="#routine">How to use</a>
+      <a href="#faq">Help</a>
+    </nav>
+    <div class="logo-slot" aria-hidden="true"></div>
+    <div class="tools">
+      <button type="button" class="lang">عربي</button>
+      <button type="button" class="iconbtn" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+      <button type="button" class="iconbtn" aria-label="Account"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
+      <button type="button" class="cartbtn" id="cartBtn" aria-label="Cart, 0 items"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg><span class="badge" id="cartCount">0</span></button>
+    </div>
+  </div>
+</header>
+
+<div class="bigspace" id="bigspace" aria-hidden="true"></div>
+<a href="#top" id="wordmark" aria-label="ENZO home"><img src="logo-red.png" alt="ENZO"></a>
+
+<section class="hero" id="top" aria-label="Featured" aria-roledescription="carousel">
+  <div class="slide s1 on">
+    <div class="wrap">
+      <div class="txt">
+        <p class="eyebrow">New innovative formula</p>
+        <h1>4D hydration.<br>One daily serum.</h1>
+        <p class="lead">Five percent hyaluronic acid in four forms, with niacinamide, ceramides and vitamin C. Paraben free.</p>
+        <div><a class="btn light" href="#shop">Shop the serum</a></div>
+      </div>
+      <div class="vis"><img src="box.jpg" alt="ENZO 4D Skin Serum box"></div>
+    </div>
+  </div>
+  <div class="slide s2">
+    <div class="wrap">
+      <div class="txt">
+        <p class="eyebrow">Six key actives</p>
+        <h1>Every ingredient<br>on the label.</h1>
+        <p class="lead">Green tea, centella asiatica, hyaluronic acid, niacinamide, ceramides and vitamin C. Here is what each one does.</p>
+        <div><a class="btn" href="#ingredients">Explore ingredients</a></div>
+      </div>
+      <div class="vis"><img src="bottle.jpg" alt="ENZO serum bottle"></div>
+    </div>
+  </div>
+  <div class="slide s3">
+    <div class="wrap">
+      <div class="txt">
+        <p class="eyebrow">Coming soon</p>
+        <h1>The ENZO<br>hair serum.</h1>
+        <p class="lead">A serum for hair and scalp is on its way. Join the list and be the first to try it.</p>
+        <div><a class="btn light" href="#newsletter">Join the waitlist</a></div>
+      </div>
+      <div class="vis"><img src="logo-white.png" alt=""></div>
+    </div>
+  </div>
+  <div class="hero-ctl">
+    <button type="button" class="arr" id="heroPrev" aria-label="Previous slide">‹</button>
+    <button type="button" class="dot on" aria-label="Go to slide 1"></button>
+    <button type="button" class="dot" aria-label="Go to slide 2"></button>
+    <button type="button" class="dot" aria-label="Go to slide 3"></button>
+    <button type="button" class="arr" id="heroNext" aria-label="Next slide">›</button>
+  </div>
+</section>
+
+<div class="marq-wrap" aria-hidden="true"><div class="marq" id="marq"></div></div>
+
+<section id="shop" class="sec">
+  <div class="wrap" style="display:flex;flex-direction:column;gap:40px">
+    <div class="rv" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">The collection</p><h2 class="h2">Daily care, clearly made</h2></div>
+      <a href="#shop" style="font-size:14px;font-weight:500">View all</a>
+    </div>
+    <div class="row">
+      <article class="card rv" style="flex:1 1 340px;min-width:0">
+        <div class="pimg" style="background:var(--crimson)">
+          <img class="i1" src="box.jpg" alt="ENZO 4D Skin Serum box">
+          <img class="i2" src="bottle.jpg" alt="">
+          <span class="tag" style="background:#fff;color:var(--crimson)">New</span>
+          <button type="button" class="wish" aria-label="Save skin serum to wishlist" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A1F" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg></button>
+        </div>
+        <div class="pbody">
+          <p class="kick">Face serum · Paraben free</p>
+          <h3>4D Hyaluronic Acid 5% Skin Serum</h3>
+          <p class="ben">Hydrates · Plumps · Smooths · Brightens</p>
+          <p class="desc">Four forms of hyaluronic acid with niacinamide, ceramides, centella, green tea and vitamin C.</p>
+          <span class="pill">30 ml</span>
+          <div class="pfoot"><span class="price">[EGP —]</span><button type="button" class="btn sm add">Add to cart</button></div>
+        </div>
+      </article>
+      <article class="card rv" style="flex:1 1 340px;min-width:0">
+        <div class="pimg" style="background:var(--ink);display:flex;align-items:center;justify-content:center">
+          <img src="logo-white.png" alt="" style="width:62%;opacity:.9">
+          <span class="tag" style="background:var(--red);color:#fff">Coming soon</span>
+        </div>
+        <div class="pbody">
+          <p class="kick">Hair &amp; scalp serum</p>
+          <h3>[Hair Serum name &amp; key active %]</h3>
+          <p class="ben">[Benefit] · [Benefit] · [Benefit]</p>
+          <p class="desc">[Waiting for the formula and box design to fill this card.]</p>
+          <div class="pfoot"><span style="font-size:14px;color:var(--muted)">Be the first to know</span><a class="btn sm outline" href="#newsletter">Notify me</a></div>
+        </div>
+      </article>
+      <div class="rv" style="flex:1 1 280px;min-width:0;border-radius:24px;background:var(--soft);padding:32px;display:flex;flex-direction:column;justify-content:space-between;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <p class="eyebrow" style="font-size:12px">Not sure?</p>
+          <h3 style="font-size:32px;line-height:1.15">Find what your skin needs in under a minute</h3>
+          <p class="desc">Five quick questions. You get your product, how to use it and when to expect results.</p>
+        </div>
+        <a class="btn" href="#routine">Take the quiz</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--soft)" class="sec">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;align-items:center;gap:56px">
+    <div class="rv" style="flex:1 1 380px;min-width:0;border-radius:28px;overflow:hidden;height:560px;background:var(--crimson)">
+      <img src="bottle.jpg" alt="ENZO 4D Skin Serum bottle" style="width:100%;height:100%;object-fit:cover;object-position:center 75%">
+    </div>
+    <div class="rv" style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:20px">
+      <p class="eyebrow">Why 4D</p>
+      <h2 class="h2">Four forms of hyaluronic acid. One drop.</h2>
+      <p style="font-size:16px;line-height:1.7;color:var(--body)">Hydrolyzed hyaluronic acid, sodium hyaluronate, acetylated hyaluronate and a hyaluronate crosspolymer work together for multi-layer hydration. Skin-conditioning actives support the moisture barrier, leaving skin looking plump, supple and refreshed.</p>
+      <div class="row" style="gap:12px">
+        <div class="stat"><b>5%</b><span>Hyaluronic acid</span></div>
+        <div class="stat"><b>6</b><span>Key actives</span></div>
+        <div class="stat"><b>0</b><span>Parabens</span></div>
+      </div>
+      <details style="border-top:1px solid var(--line2);padding-top:16px">
+        <summary>Full ingredient list</summary>
+        <p class="inci">HYDROLYZED SODIUM HYALURONATE, SODIUM HYALURONATE, SODIUM HYALURONATE CROSSPOLYMER, SODIUM ACETYLATED HYALURONATE, HYALURONIC ACID, PALMITOYL TRIPEPTIDE-1, PALMITOYL TETRAPEPTIDE-7, ACETYL HEXAPEPTIDE-8, CERAMIDE 1, CERAMIDE NP, CERAMIDE EOP, CERAMIDE AP, NIACINAMIDE, CENTELLA ASIATICA EXTRACT, TOCOPHERYL ACETATE, ASCORBIC ACID, HYDROLYZED COLLAGEN, KOJIC DIPALMITATE, MELALEUCA ALTERNIFOLIA LEAF OIL, CAMELLIA SINENSIS EXTRACT, TRANEXAMIC ACID, ALPHA-ARBUTIN, GLUTATHIONE, PHENOXYETHANOL, PANTHENOL, GLYCERIN, AQUA</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="ingredients" class="sec">
+  <div style="max-width:1280px;margin:0 auto;padding-left:24px;display:flex;flex-direction:column;gap:36px">
+    <div class="rv" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding-right:24px">
+      <div style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">Ingredient glossary</p><h2 class="h2">What each active does</h2></div>
+      <div style="display:flex;gap:10px">
+        <button type="button" class="round" id="ingPrev" aria-label="Scroll ingredients left">←</button>
+        <button type="button" class="round" id="ingNext" aria-label="Scroll ingredients right">→</button>
+      </div>
+    </div>
+    <div class="track" id="track"></div>
+  </div>
+</section>
+
+<section id="routine" class="sec" style="background:var(--crimson);color:#fff">
+  <div class="wrap" style="display:flex;flex-direction:column;gap:44px">
+    <div class="rv" style="display:flex;flex-direction:column;gap:10px;max-width:640px">
+      <p class="eyebrow" style="color:var(--pink)">Your routine</p>
+      <h2 class="h2">Three steps, morning and evening</h2>
+    </div>
+    <div class="row">
+      <div class="step rv"><b>01</b><h3>Cleanse and dry</h3><p>Start with clean, dry skin.</p></div>
+      <div class="step rv"><b>02</b><h3>Apply a few drops</h3><p>Massage gently until fully absorbed.</p></div>
+      <div class="step rv"><b>03</b><h3>Follow with moisturizer</h3><p>Use morning and evening, before your moisturizer.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap" style="display:flex;flex-direction:column;gap:36px">
+    <div class="rv" style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">Real results</p><h2 class="h2">From people who use it</h2></div>
+    <div class="row">
+      <div class="rev rv"><p style="font-size:15px;line-height:1.6;color:var(--body)">[Verified customer review]</p><p style="font-size:13px;color:var(--muted)">[First name] · Verified purchase</p></div>
+      <div class="rev rv"><p style="font-size:15px;line-height:1.6;color:var(--body)">[Verified customer review]</p><p style="font-size:13px;color:var(--muted)">[First name] · Verified purchase</p></div>
+      <div class="rev rv"><p style="font-size:15px;line-height:1.6;color:var(--body)">[Verified customer review]</p><p style="font-size:13px;color:var(--muted)">[First name] · Verified purchase</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--soft);padding:72px 0">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:40px;align-items:center">
+    <div class="rv" style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:12px">
+      <h2 style="font-size:38px">Where is my order?</h2>
+      <p style="font-size:15px;line-height:1.6;color:var(--body)">No account needed. Enter your phone number and order number.</p>
+    </div>
+    <form class="rv" style="flex:1 1 480px;min-width:0;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end" onsubmit="return false">
+      <div class="field" style="flex:1 1 180px"><label for="trkPhone">Phone number</label><input id="trkPhone" type="tel" placeholder="01X XXXX XXXX"></div>
+      <div class="field" style="flex:1 1 140px"><label for="trkOrder">Order number</label><input id="trkOrder" type="text" placeholder="EZ-0000"></div>
+      <button type="submit" class="btn sm">Track</button>
+    </form>
+  </div>
+</section>
+
+<section id="faq" class="sec">
+  <div style="max-width:880px;margin:0 auto;padding:0 24px;display:flex;flex-direction:column;gap:28px">
+    <h2 class="h2 rv" style="text-align:center">Questions, answered</h2>
+    <div id="faqList" style="border-top:1px solid var(--line)"></div>
+  </div>
+</section>
+
+<section id="newsletter" style="border-top:1px solid var(--line);padding:64px 0">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+    <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:8px">
+      <h2 style="font-size:34px">Stay in touch</h2>
+      <p style="font-size:15px;color:var(--body)">New launches, routines and offers. [Welcome offer]</p>
+    </div>
+    <form style="flex:1 1 420px;min-width:0;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end" onsubmit="return false">
+      <div class="field" style="flex:1 1 240px"><label for="nl">Email or WhatsApp number</label><input id="nl" type="text"></div>
+      <button type="submit" class="btn sm">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="padding-top:64px;padding-bottom:32px;display:flex;flex-direction:column;gap:48px">
+    <div class="row" style="gap:40px">
+      <div style="flex:2 1 280px;display:flex;flex-direction:column;gap:16px">
+        <img src="logo-white.png" alt="ENZO" style="height:34px;width:auto;align-self:flex-start">
+        <p style="font-size:14px;line-height:1.6;max-width:320px">Daily skin care. Manufactured by Nile Cosmetics, made in Egypt.</p>
+      </div>
+      <div class="fcol"><p>Shop</p><a href="#shop">Skin serum</a><a href="#shop">Hair serum</a><a href="#ingredients">Ingredients</a></div>
+      <div class="fcol"><p>Help</p><a href="#faq">FAQ</a><a href="#faq">Shipping &amp; returns</a><a href="#top">Track order</a><a href="#top">Contact us</a></div>
+    </div>
+    <div style="border-top:1px solid #33333C;padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:13px">
+      <span>© 2026 ENZO. All rights reserved.</span>
+      <span>[Instagram] · [Facebook] · [TikTok]</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"><span class="ok"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span><span>Added to your cart</span></div>
+
+<a class="wa" href="#top" aria-label="Chat with us on WhatsApp"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.8A8 8 0 1112 20a8 8 0 01-3.8-1z"/></svg></a>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Announcement */
+  var ann = ['Free shipping on orders over [EGP AMOUNT]','Pay by card, wallet or cash on delivery','New: 4D Hyaluronic Acid 5% Skin Serum'];
+  var ai = 0, annEl = document.getElementById('annText');
+  function showAnn(i){ ai = (i + ann.length) % ann.length; var s = document.createElement('span'); s.id='annText'; s.setAttribute('aria-live','polite'); s.textContent = ann[ai]; annEl.replaceWith(s); annEl = s; }
+  document.getElementById('annPrev').onclick = function(){ showAnn(ai-1); };
+  document.getElementById('annNext').onclick = function(){ showAnn(ai+1); };
+  if(!reduce) setInterval(function(){ showAnn(ai+1); }, 4000);
+
+  /* Hero */
+  var slides = document.querySelectorAll('.slide'), dots = document.querySelectorAll('.dot'), si = 0, timer;
+  function go(i){ si = (i + slides.length) % slides.length; slides.forEach(function(s,k){ s.classList.toggle('on', k===si); }); dots.forEach(function(d,k){ d.classList.toggle('on', k===si); }); }
+  function auto(){ clearInterval(timer); if(!reduce) timer = setInterval(function(){ go(si+1); }, 6500); }
+  document.getElementById('heroPrev').onclick = function(){ go(si-1); auto(); };
+  document.getElementById('heroNext').onclick = function(){ go(si+1); auto(); };
+  dots.forEach(function(d,k){ d.onclick = function(){ go(k); auto(); }; });
+  auto();
+
+  /* Marquee */
+  var words = ['Hyaluronic Acid 5%','Niacinamide','Ceramides','Centella Asiatica','Green Tea Extract','Vitamin C'];
+  var html = ''; for(var r=0;r<4;r++) words.forEach(function(w){ html += '<span>'+w+' <i>●</i></span>'; });
+  document.getElementById('marq').innerHTML = html;
+
+  /* Ingredients */
+  var ings = [
+    ['Hyaluronic Acid (4D)','Hydration','Four forms of different sizes hold water in the skin, for a plumper, smoother look.'],
+    ['Niacinamide','Tone & barrier','Helps even out skin tone and supports a stronger moisture barrier.'],
+    ['Ceramides','Barrier support','Lipids your skin already makes. They help lock moisture in.'],
+    ['Centella Asiatica','Soothing','A plant extract known for calming and comforting the skin.'],
+    ['Green Tea Extract','Antioxidant','Rich in antioxidants that help defend skin against daily stressors.'],
+    ['Vitamin C','Radiance','An antioxidant that helps skin look brighter and more even.'],
+    ['Peptides','Smoothness','Palmitoyl and acetyl peptides that help the look of fine lines.']
+  ];
+  var track = document.getElementById('track');
+  track.innerHTML = ings.map(function(x,i){ return '<div class="ing"><span class="n">0'+(i+1)+'</span><h3>'+x[0]+'</h3><p class="role">'+x[1]+'</p><p class="t">'+x[2]+'</p></div>'; }).join('');
+  document.getElementById('ingPrev').onclick = function(){ track.scrollBy({left:-320,behavior:'smooth'}); };
+  document.getElementById('ingNext').onclick = function(){ track.scrollBy({left:320,behavior:'smooth'}); };
+
+  /* FAQ */
+  var faqs = [
+    ['Who is the 4D Skin Serum for?','Anyone looking for deep hydration, smoother texture and a more radiant look. [Formulator to confirm skin-type guidance.]'],
+    ['How do I use it?','Apply a few drops to clean, dry skin and massage gently until absorbed. Use morning and evening, before your moisturizer.'],
+    ['Are there any cautions?','For external use only. Keep out of reach of children. Avoid contact with eyes. Stop using it if irritation occurs. Store below 30°C.'],
+    ['How much is shipping and how long does it take?','[Shipping fees and delivery times by governorate.]'],
+    ['What if the product does not suit me?','[Return and exchange policy.]']
+  ];
+  var fl = document.getElementById('faqList');
+  fl.innerHTML = faqs.map(function(f,i){ return '<div class="faq-item'+(i===0?' open':'')+'"><button type="button" class="faq-q" aria-expanded="'+(i===0)+'"><span>'+f[0]+'</span><span class="pl" aria-hidden="true">+</span></button><div class="faq-a"><p>'+f[1]+'</p></div></div>'; }).join('');
+  fl.querySelectorAll('.faq-item').forEach(function(item){
+    item.querySelector('.faq-q').onclick = function(){
+      var open = item.classList.contains('open');
+      fl.querySelectorAll('.faq-item').forEach(function(o){ o.classList.remove('open'); o.querySelector('.faq-q').setAttribute('aria-expanded','false'); });
+      if(!open){ item.classList.add('open'); this.setAttribute('aria-expanded','true'); }
+    };
+  });
+
+  /* Cart + wishlist */
+  var count = 0, toast = document.getElementById('toast'), tt;
+  document.querySelectorAll('.add').forEach(function(b){ b.onclick = function(){
+    count++; document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartBtn').setAttribute('aria-label','Cart, '+count+' items');
+    toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+    clearTimeout(tt); tt = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+  }; });
+  document.querySelectorAll('.wish').forEach(function(w){ w.onclick = function(){ var on = !w.classList.contains('on'); w.classList.toggle('on', on); w.setAttribute('aria-pressed', on); }; });
+
+  /* Scroll reveal */
+  var rvs = document.querySelectorAll('.rv');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+    rvs.forEach(function(el){ io.observe(el); });
+  } else { rvs.forEach(function(el){ el.classList.add('in'); }); }
+
+  /* Wordmark glides into the header on scroll */
+  var wm = document.getElementById('wordmark'), space = document.getElementById('bigspace');
+  var ratio = 1141/290, ANN = 40, HEAD = 72, PAD = 28, SMALL = 28, ticking = false;
+  function layout(){
+    ticking = false;
+    var vw = window.innerWidth, y = window.scrollY || document.documentElement.scrollTop || 0;
+    var bigW = Math.min(980, vw - 48), bigH = bigW / ratio, smallW = SMALL * ratio;
+    var spacerH = Math.round(bigH + PAD*2);
+    space.style.height = spacerH + 'px';
+    var raw = Math.max(0, Math.min(1, y / spacerH));
+    var p = reduce ? (raw >= 1 ? 1 : (raw > 0 ? 1 : 0)) : (raw < .5 ? 2*raw*raw : 1 - Math.pow(-2*raw+2,2)/2);
+    var headerTop = Math.max(0, ANN - y);
+    var startTop = ANN + HEAD + PAD - y;
+    var endTop = headerTop + (HEAD - SMALL)/2;
+    wm.style.top = (startTop + (endTop - startTop)*p).toFixed(1) + 'px';
+    wm.style.width = (bigW + (smallW - bigW)*p).toFixed(1) + 'px';
+  }
+  function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(layout); } }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  layout();
+})();
+</script>
+</body>
+</html>
