@@ -347,15 +347,21 @@ async function api(req, res, url) {
 }
 
 // ---------- static files
-const TYPES = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const TYPES = {
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon'
+};
 const ROUTES = { '/': 'index.html', '/admin': 'admin.html', '/feedback': 'feedback.html' };
 // Content-Security-Policy: tells the browser which sources are allowed to load code, styles,
 // fonts and data. If an XSS bug ever slips in, injected code still can't load outside scripts
 // or send data to another site. 'unsafe-inline' stays until Phase 2 moves the inline <script>
 // and style="" code into separate files.
+// Phase 2: all JavaScript now lives in .js files, so scripts are 'self' only. An injected
+// <script> or onclick="" is now refused by the browser. Styles keep 'unsafe-inline' because
+// the pages still use many style="" attributes (much lower risk than inline scripts).
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  "script-src 'self' https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src https://fonts.gstatic.com",
   "img-src 'self' data:",
@@ -368,13 +374,21 @@ const SECURITY_HEADERS = {
 };
 function serveStatic(req, res, url) {
   let name = ROUTES[url.pathname.replace(/\/+$/, '') || '/'] || url.pathname.slice(1);
-  if (!/^[a-z0-9-]+\.(html|png|jpg|svg|ico)$/.test(name)) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
+  // Only plain file names with a known extension: no "/", no "..", so nothing outside public/ can be read.
+  if (!/^[a-z0-9-]+\.(html|css|js|png|jpg|webp|svg|ico)$/.test(name)) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
   const file = path.join(PUBLIC, name);
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(name);
-    res.writeHead(200, { 'Content-Type': TYPES[ext], 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400', ...SECURITY_HEADERS, ...(ext === '.html' ? { 'Content-Security-Policy': CSP } : {}), ...(name === 'admin.html' || name === 'feedback.html' ? { 'X-Robots-Tag': 'noindex' } : {}) });
-    res.end(buf);
+    // ETag = a fingerprint of the file's content. The browser sends it back as If-None-Match;
+    // if the file hasn't changed we answer "304 Not Modified" with no body, which saves bandwidth.
+    const etag = '"' + crypto.createHash('sha1').update(buf).digest('base64url').slice(0, 16) + '"';
+    // HTML, CSS and JS: always check for a new version (they change on every deploy).
+    // Images rarely change: let browsers keep them for a week.
+    const cache = ext === '.html' || ext === '.css' || ext === '.js' ? 'no-cache' : 'public, max-age=604800';
+    if (req.headers['if-none-match'] === etag) { res.writeHead(304, { ETag: etag, 'Cache-Control': cache }); return res.end(); }
+    res.writeHead(200, { 'Content-Type': TYPES[ext], ETag: etag, 'Cache-Control': cache, ...SECURITY_HEADERS, ...(ext === '.html' ? { 'Content-Security-Policy': CSP } : {}), ...(name === 'admin.html' || name === 'feedback.html' ? { 'X-Robots-Tag': 'noindex' } : {}) });
+    res.end(req.method === 'HEAD' ? undefined : buf); // HEAD asks for headers only
   });
 }
 
