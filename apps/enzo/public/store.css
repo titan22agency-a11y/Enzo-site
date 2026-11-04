@@ -4,7 +4,7 @@
 html{scroll-behavior:smooth}
 body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:var(--ink)}a:hover{color:var(--red)}
-img{max-width:100%}
+img{max-width:100%;height:auto}
 h1,h2,h3{font-family:Jost,sans-serif;font-weight:300;margin:0}
 p{margin:0}
 .wrap{max-width:1280px;margin:0 auto;padding:0 24px}
@@ -53,7 +53,7 @@ header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdro
 
 /* big wordmark */
 .bigspace{background:#fff;border-bottom:1px solid var(--line)}
-#wordmark{position:fixed;z-index:35;left:50%;transform:translateX(-50%);display:block;will-change:top,width}
+#wordmark{position:fixed;z-index:35;top:0;left:50%;transform:translateX(-50%);transform-origin:50% 0;display:block;will-change:transform}
 #wordmark img{display:block;width:100%;height:auto}
 
 /* hero */
@@ -63,10 +63,10 @@ header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdro
 .slide .wrap{height:100%;display:flex;align-items:center;gap:40px}
 .slide .txt{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:22px;opacity:0;transform:translateY(24px);transition:transform .9s ease .15s,opacity .9s ease .15s}
 .slide.on .txt{opacity:1;transform:none}
-.slide h1{font-size:clamp(40px,5vw,60px);line-height:1.05}
+.slide h1,.slide h2{font-size:clamp(40px,5vw,60px);line-height:1.05}
 .slide .lead{font-size:17px;line-height:1.6;max-width:460px;opacity:.85}
 .slide .vis{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:center;justify-content:center}
-.slide .vis img{transform:scale(1.06);transition:transform 1.4s ease}
+.slide .vis img{width:auto;transform:scale(1.06);transition:transform 1.4s ease}
 .slide.on .vis img{transform:scale(1)}
 .s1{background:var(--crimson);color:#fff}.s1 .eyebrow{color:var(--pink)}
 .s1 .vis img{height:100%;object-fit:cover}
@@ -78,6 +78,11 @@ header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdro
 .hero-ctl .arr{width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.15);color:#fff;cursor:pointer;font-size:18px}
 .dot{height:8px;width:8px;border-radius:999px;border:0;padding:0;cursor:pointer;background:rgba(255,255,255,.6);box-shadow:0 0 0 1px rgba(0,0,0,.15);transition:width .4s,background .4s}
 .dot.on{width:32px;background:var(--red)}
+.hero-ctl .pause{font-size:14px}
+/* slide 2 has a light background: switch the controls to dark so they stay visible */
+.hero.light .hero-ctl .arr{border-color:rgba(26,26,31,.35);background:rgba(255,255,255,.7);color:var(--ink)}
+.hero.light .dot{background:rgba(26,26,31,.35)}
+.hero.light .dot.on{background:var(--red)}
 
 /* marquee */
 .marq-wrap{background:var(--ink);color:#fff;overflow:hidden;padding:18px 0}
@@ -143,7 +148,7 @@ details summary{cursor:pointer;font-size:15px;font-weight:600}
 .faq-q .pl{font-size:24px;font-weight:300;transition:transform .35s}
 .faq-item.open .pl{transform:rotate(45deg)}
 .faq-a{overflow:hidden;max-height:0;opacity:0;transition:max-height .45s ease,opacity .35s}
-.faq-item.open .faq-a{max-height:260px;opacity:1}
+.faq-item.open .faq-a{opacity:1}
 .faq-a p{margin-bottom:22px;font-size:15px;line-height:1.65;color:var(--body)}
 
 footer{background:var(--ink);color:#B8B8C2}
@@ -168,17 +173,25 @@ footer a{color:#B8B8C2;text-decoration:none}footer a:hover{color:#fff}
 @media (max-width:860px){
   .nav{display:none}
   .burger{display:flex}
+  /* mobile menu, opened by the burger button */
+  header.menu-open{z-index:40}
+  .nav.open{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 20px 40px rgba(26,26,31,.1);padding:8px 24px 16px}
+  .nav.open>a,.nav.open .shop>a{display:block;padding:14px 0;border-bottom:1px solid var(--line)}
+  .nav.open>a::after,.nav.open .shop>a::after{display:none}
+  .nav.open .mega{display:none!important}
   .logo-slot{flex-basis:100px}
   .hero{height:auto;min-height:640px}
   .slide .wrap{flex-direction:column;justify-content:center;padding-top:40px;padding-bottom:90px;gap:24px}
   .slide .vis{height:260px;flex:none;width:100%}
   .slide .vis img{height:100%}
+  .s3 .vis img{height:auto}
   .pimg{height:360px}
   .sec{padding:72px 0}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
 }
 
 

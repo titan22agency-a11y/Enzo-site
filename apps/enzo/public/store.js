@@ -4,16 +4,38 @@
 
   /* Announcement */
   var ann = window.__ann = ['Free shipping on orders over [EGP AMOUNT]','Pay by card, wallet or cash on delivery','New: 4D Hyaluronic Acid 5% Skin Serum'];
-  var ai = 0, annEl = document.getElementById('annText');
-  function showAnn(i){ ai = (i + ann.length) % ann.length; var s = document.createElement('span'); s.id='annText'; s.setAttribute('aria-live','polite'); s.textContent = ann[ai]; annEl.replaceWith(s); annEl = s; }
-  document.getElementById('annPrev').onclick = function(){ showAnn(ai-1); };
-  document.getElementById('annNext').onclick = function(){ showAnn(ai+1); };
-  if(!reduce) setInterval(function(){ showAnn(ai+1); }, 4000);
+  var ai = 0, annEl = document.getElementById('annText'), annBar = annEl.parentNode, annHold = false;
+  // Same element every time (screen readers only follow a live region that stays in the page).
+  // Auto-rotation is silent (aria-live="off"); a click by the visitor is announced ("polite").
+  function showAnn(i, spoken){
+    ai = (i + ann.length) % ann.length;
+    annEl.setAttribute('aria-live', spoken ? 'polite' : 'off');
+    annEl.textContent = ann[ai];
+    annEl.style.animation = 'none'; void annEl.offsetWidth; annEl.style.animation = ''; // replay the fade-in
+  }
+  document.getElementById('annPrev').onclick = function(){ showAnn(ai-1, true); };
+  document.getElementById('annNext').onclick = function(){ showAnn(ai+1, true); };
+  // WCAG 2.2.2: moving content must stop while someone is reading or using it.
+  ['mouseenter','focusin'].forEach(function(ev){ annBar.addEventListener(ev, function(){ annHold = true; }); });
+  ['mouseleave','focusout'].forEach(function(ev){ annBar.addEventListener(ev, function(){ annHold = false; }); });
+  if(!reduce) setInterval(function(){ if(!annHold && !document.hidden) showAnn(ai+1, false); }, 4000);
 
   /* Hero */
-  var slides = document.querySelectorAll('.slide'), dots = document.querySelectorAll('.dot'), si = 0, timer;
-  function go(i){ si = (i + slides.length) % slides.length; slides.forEach(function(s,k){ s.classList.toggle('on', k===si); }); dots.forEach(function(d,k){ d.classList.toggle('on', k===si); }); }
-  function auto(){ clearInterval(timer); if(!reduce) timer = setInterval(function(){ go(si+1); }, 6500); }
+  var hero = document.getElementById('top'), slides = document.querySelectorAll('.slide'), dots = document.querySelectorAll('.dot'), si = 0, timer;
+  var pauseBtn = document.getElementById('heroPause'), paused = reduce, hover = false;
+  function go(i){
+    si = (i + slides.length) % slides.length;
+    slides.forEach(function(s,k){ s.classList.toggle('on', k===si); });
+    dots.forEach(function(d,k){ d.classList.toggle('on', k===si); if(k===si) d.setAttribute('aria-current','true'); else d.removeAttribute('aria-current'); });
+    hero.classList.toggle('light', slides[si].classList.contains('s2')); // dark controls on the light slide
+  }
+  // One timer; it only advances when nobody paused it and the pointer/keyboard isn't on the slideshow.
+  function auto(){ clearInterval(timer); timer = setInterval(function(){ if(!paused && !hover && !document.hidden) go(si+1); }, 6500); }
+  function setPaused(p){ paused = p; pauseBtn.setAttribute('aria-pressed', p); pauseBtn.setAttribute('aria-label', p ? 'Play slideshow' : 'Pause slideshow'); pauseBtn.textContent = p ? '▶' : '❚❚'; }
+  pauseBtn.onclick = function(){ setPaused(!paused); };
+  setPaused(paused);
+  ['mouseenter','focusin'].forEach(function(ev){ hero.addEventListener(ev, function(){ hover = true; }); });
+  ['mouseleave','focusout'].forEach(function(ev){ hero.addEventListener(ev, function(){ hover = false; }); });
   document.getElementById('heroPrev').onclick = function(){ go(si-1); auto(); };
   document.getElementById('heroNext').onclick = function(){ go(si+1); auto(); };
   dots.forEach(function(d,k){ d.onclick = function(){ go(k); auto(); }; });
@@ -49,13 +71,34 @@
   ];
   var fl = document.getElementById('faqList');
   fl.innerHTML = faqs.map(function(f,i){ return '<div class="faq-item'+(i===0?' open':'')+'"><button type="button" class="faq-q" aria-expanded="'+(i===0)+'"><span>'+f[0]+'</span><span class="pl" aria-hidden="true">+</span></button><div class="faq-a"><p>'+f[1]+'</p></div></div>'; }).join('');
-  fl.querySelectorAll('.faq-item').forEach(function(item){
+  function setOpen(item, on){
+    var a = item.querySelector('.faq-a');
+    item.classList.toggle('open', on);
+    item.querySelector('.faq-q').setAttribute('aria-expanded', on);
+    a.style.maxHeight = on ? a.scrollHeight + 'px' : '0px'; // scrollHeight = full height of the content
+  }
+  var items = fl.querySelectorAll('.faq-item');
+  items.forEach(function(item){
+    setOpen(item, item.classList.contains('open'));
     item.querySelector('.faq-q').onclick = function(){
-      var open = item.classList.contains('open');
-      fl.querySelectorAll('.faq-item').forEach(function(o){ o.classList.remove('open'); o.querySelector('.faq-q').setAttribute('aria-expanded','false'); });
-      if(!open){ item.classList.add('open'); this.setAttribute('aria-expanded','true'); }
+      var wasOpen = item.classList.contains('open');
+      items.forEach(function(o){ setOpen(o, false); });
+      if(!wasOpen) setOpen(item, true);
     };
   });
+  // Text re-wraps when the window changes size, so re-measure the open answer.
+  window.addEventListener('resize', function(){ items.forEach(function(o){ if(o.classList.contains('open')) setOpen(o, true); }); });
+
+  /* Mobile menu */
+  var menuBtn = document.getElementById('menuBtn'), nav = document.getElementById('mainNav'), headerEl = document.querySelector('header');
+  function menu(open){
+    nav.classList.toggle('open', open); headerEl.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Menu');
+  }
+  menuBtn.onclick = function(){ menu(!nav.classList.contains('open')); };
+  nav.addEventListener('click', function(e){ if(e.target.closest('a')) menu(false); }); // picking a link closes it
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && nav.classList.contains('open')){ menu(false); menuBtn.focus(); } });
+  window.addEventListener('resize', function(){ if(window.innerWidth > 860) menu(false); });
 
   /* Cart + wishlist */
   var count = 0, toast = document.getElementById('toast'), tt;
@@ -71,25 +114,29 @@
 
   /* Wordmark glides into the header on scroll */
   var wm = document.getElementById('wordmark'), space = document.getElementById('bigspace');
-  var ratio = 1141/290, ANN = 40, HEAD = 72, PAD = 28, SMALL = 28, ticking = false;
-  function layout(){
-    ticking = false;
-    var vw = window.innerWidth, y = window.scrollY || document.documentElement.scrollTop || 0;
-    var bigW = Math.min(980, vw - 48), bigH = bigW / ratio, smallW = SMALL * ratio;
-    var spacerH = Math.round(bigH + PAD*2);
+  var ratio = 1141/290, ANN = 40, HEAD = 72, PAD = 28, SMALL = 28, ticking = false, bigW = 0, spacerH = 0;
+  // Sizes only change when the window does, so measure here, not on every scroll frame.
+  function measure(){
+    bigW = Math.min(980, window.innerWidth - 48);
+    spacerH = Math.round(bigW / ratio + PAD*2);
     space.style.height = spacerH + 'px';
-    var raw = Math.max(0, Math.min(1, y / spacerH));
-    var p = reduce ? (raw >= 1 ? 1 : (raw > 0 ? 1 : 0)) : (raw < .5 ? 2*raw*raw : 1 - Math.pow(-2*raw+2,2)/2);
-    var headerTop = Math.max(0, ANN - y);
-    var startTop = ANN + HEAD + PAD - y;
-    var endTop = headerTop + (HEAD - SMALL)/2;
-    wm.style.top = (startTop + (endTop - startTop)*p).toFixed(1) + 'px';
-    wm.style.width = (bigW + (smallW - bigW)*p).toFixed(1) + 'px';
+    wm.style.width = bigW + 'px';
+    frame();
   }
-  function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(layout); } }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  window.addEventListener('resize', onScroll);
-  layout();
+  // Each scroll frame: only a transform. The browser moves the logo on the GPU without
+  // recalculating the page layout (changing top/width would force a full layout every frame).
+  function frame(){
+    ticking = false;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var raw = Math.max(0, Math.min(1, y / spacerH));
+    var p = reduce ? (raw > 0 ? 1 : 0) : (raw < .5 ? 2*raw*raw : 1 - Math.pow(-2*raw+2,2)/2); // ease-in-out
+    var startTop = ANN + HEAD + PAD - y, endTop = Math.max(0, ANN - y) + (HEAD - SMALL)/2;
+    var top = startTop + (endTop - startTop)*p, scale = 1 + (SMALL*ratio/bigW - 1)*p;
+    wm.style.transform = 'translate(-50%,' + top.toFixed(1) + 'px) scale(' + scale.toFixed(4) + ')';
+  }
+  window.addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(frame); } }, {passive:true});
+  window.addEventListener('resize', measure);
+  measure();
 })();
 
 
@@ -108,7 +155,7 @@
     if(c.heroTitle)$('heroTitle').textContent=c.heroTitle;
     if(c.heroBody)$('heroBody').textContent=c.heroBody;
     if(c.heroCta)$('heroCta').textContent=c.heroCta;
-    if(c.whatsapp){var wa='https://wa.me/'+c.whatsapp;$('waFloat').href=wa;$('notifyBtn').href=wa+'?text='+encodeURIComponent('عايزة أعرف أول ما سيرم الشعر ينزل');$('notifyBtn').target='_blank';}
+    if(c.whatsapp){var wa='https://wa.me/'+c.whatsapp;$('waFloat').href=wa;$('footContact').href=wa;$('footContact').target='_blank';$('footContact').rel='noopener';$('notifyBtn').href=wa+'?text='+encodeURIComponent('عايزة أعرف أول ما سيرم الشعر ينزل');$('notifyBtn').target='_blank';}
     var p=prod('p1'), btn=$('p1Add');
     if(p&&p.active&&p.price>0){$('p1Price').textContent=egp(p.price);
       if(p.inStock){btn.disabled=false;btn.style.opacity='';btn.style.cursor='';btn.textContent='Add to cart';}else{btn.disabled=true;btn.textContent='Out of stock';}}
