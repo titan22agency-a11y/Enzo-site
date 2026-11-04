@@ -361,7 +361,7 @@ tbody tr:last-child td{border-bottom:0}
   function stars(n){var s='';for(var i=1;i<=5;i++)s+=i<=n?'★':'☆';return '<span class="stars" aria-label="'+n+' من 5">'+s+'</span>';}
   function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('on');},2400);}
   function waLink(phone,msg){return 'https://wa.me/'+phone.replace(/^0/,'20')+'?text='+encodeURIComponent(msg);}
-  function fbLink(o,t){return location.origin+'/feedback?o='+encodeURIComponent(o.id)+'&t='+t;}
+  function fbLink(o,t){return location.origin+'/feedback?o='+encodeURIComponent(o.id)+'&t='+t+'&k='+encodeURIComponent(o.fbToken||'');}
   function fill(tpl,o,t){return tpl.replace(/\{name\}/g,o.name.split(' ')[0]).replace(/\{order\}/g,o.id).replace(/\{link\}/g,fbLink(o,t));}
   function itemsText(o){return o.items.map(function(it){var p=db.products.find(function(x){return x.id===it.pid;});return (p?p.name:'منتج')+' × '+it.qty;}).join('، ');}
   function valid(o){return o.status!=='returned'&&o.status!=='cancelled';}
@@ -502,7 +502,10 @@ tbody tr:last-child td{border-bottom:0}
   $('#search').oninput=renderOrders;$('#payFilter').onchange=renderOrders;
   $('#exportCsv').onclick=function(){
     var rows=[['رقم الأوردر','التاريخ','العميل','الموبايل','المحافظة','العنوان','المنتجات','الإجمالي','الدفع','الحالة']].concat(filtered().map(function(o){return [o.id,new Date(o.created).toLocaleString('ar-EG'),o.name,o.phone,o.gov,o.address,itemsText(o),o.total,o.pay,SL[o.status]];}));
-    var csv='﻿'+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    // A cell starting with = + - @ (or tab/CR) is run as a formula by Excel. A customer could type
+    // =HYPERLINK(...) as their name, so put a ' in front: Excel then shows it as plain text.
+    var cell=function(c){var s=String(c==null?'':c);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
+    var csv='﻿'+rows.map(function(r){return r.map(cell).join(',');}).join('\n');
     var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='enzo-orders.csv';a.click();
   };
 

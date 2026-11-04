@@ -8,6 +8,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const net = require('node:net');
 const { DatabaseSync } = require('node:sqlite');
 
 const DATA = process.env.ENZO_DATA || path.join(__dirname, '.data');
@@ -85,11 +86,30 @@ function userFrom(req) {
   return db.prepare('SELECT username,name,role FROM users WHERE username=?').get(s.username) || null;
 }
 
+// Expired sessions are useless, so delete them at startup and every hour.
+const purgeSessions = () => db.prepare('DELETE FROM sessions WHERE expires < ?').run(Date.now());
+purgeSessions();
+setInterval(purgeSessions, 36e5).unref();
+
+// ---------- feedback link tokens
+// A random secret, created once and kept in the database. Feedback links carry
+// HMAC(secret, orderId), so only someone who received the real link can send feedback for that order.
+let FB_SECRET = kvGet('fbSecret', null);
+if (!FB_SECRET) { FB_SECRET = crypto.randomBytes(32).toString('hex'); kvSet('fbSecret', FB_SECRET); }
+const fbToken = orderId => crypto.createHmac('sha256', FB_SECRET).update(orderId).digest('base64url').slice(0, 22);
+function fbTokenOk(orderId, token) {
+  const a = Buffer.from(fbToken(orderId)), b = Buffer.from(String(token || ''));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 // ---------- tiny rate limiter
 const hits = new Map();
+const MAX_KEYS = 20000; // hard cap so a flood of different keys can't fill the server's memory
 function limited(key, max, ms) {
   const t = Date.now(), arr = (hits.get(key) || []).filter(x => t - x < ms);
-  arr.push(t); hits.set(key, arr);
+  arr.push(t);
+  hits.delete(key); hits.set(key, arr); // re-insert so the Map stays ordered oldest → newest
+  if (hits.size > MAX_KEYS) hits.delete(hits.keys().next().value); // drop the least recently used key
   return arr.length > max;
 }
 setInterval(() => { const t = Date.now(); for (const [k, v] of hits) if (!v.some(x => t - x < 36e5)) hits.delete(k); }, 6e5).unref();
@@ -97,7 +117,7 @@ setInterval(() => { const t = Date.now(); for (const [k, v] of hits) if (!v.some
 // ---------- helpers
 function send(res, code, obj, headers) {
   const body = JSON.stringify(obj);
-  res.writeHead(code, Object.assign({ 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Content-Length': Buffer.byteLength(body) }, headers || {}));
+  res.writeHead(code, Object.assign({ 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Length': Buffer.byteLength(body) }, headers || {}));
   res.end(body);
 }
 function readJson(req) {
@@ -110,7 +130,19 @@ function readJson(req) {
   });
 }
 const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
-const ipOf = req => (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
+// Who is the real visitor? Path of a request: visitor → Cloudflare → Caddy → this app.
+// - Cloudflare puts the visitor's IP in CF-Connecting-IP.
+// - Otherwise use the LAST X-Forwarded-For entry: that one was added by our own proxy (Caddy).
+//   The FIRST entry is whatever the visitor typed, so trusting it let anyone dodge the rate limits.
+// Set ENZO_TRUST_CF=0 if the site is ever served without Cloudflare in front.
+const TRUST_CF = process.env.ENZO_TRUST_CF !== '0';
+function ipOf(req) {
+  const cf = String(req.headers['cf-connecting-ip'] || '').trim();
+  if (TRUST_CF && net.isIP(cf)) return cf;
+  const xff = String(req.headers['x-forwarded-for'] || '').split(',').map(s => s.trim()).filter(Boolean);
+  const last = xff[xff.length - 1];
+  return last && net.isIP(last) ? last : req.socket.remoteAddress;
+}
 const GOVS = ['القاهرة', 'الجيزة', 'الإسكندرية', 'القليوبية', 'الدقهلية', 'الشرقية', 'الغربية', 'المنوفية', 'البحيرة', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس', 'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج', 'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'مطروح', 'شمال سيناء', 'جنوب سيناء', 'الوادي الجديد'];
 const STATUSES = ['new', 'confirmed', 'preparing', 'shipped', 'delivered', 'returned', 'cancelled'];
 const REASONS = ['التوصيل', 'التغليف', 'النتيجة', 'سهولة الاستخدام', 'الريحة أو القوام', 'السعر', 'خدمة العملاء'];
@@ -186,9 +218,11 @@ async function api(req, res, url) {
       comment: str(b.comment, 600), consent: type === 'd21' && b.consent === true, published: false, handled: false, at: now()
     };
     if (type === 'd7' ? f.csat == null : (f.result == null || f.nps == null)) return send(res, 400, { error: 'جاوبي على أسئلة التقييم' });
+    // Only accept feedback for a real order, sent from the signed link the team sent on WhatsApp.
     const o = getOrder(f.orderId);
-    f.name = o ? o.name : ''; f.phone = o ? o.phone : '';
-    if (o) { o.history.push({ at: f.at, text: 'العميل بعت فيدباك: ' + (type === 'd7' ? 'تقييم أول انطباع' : 'النتيجة وNPS') }); putOrder(o); }
+    if (!o || !fbTokenOk(o.id, b.k)) return send(res, 403, { error: 'اللينك ده مش صالح. استخدمي اللينك اللي وصلك على واتساب' });
+    f.name = o.name; f.phone = o.phone;
+    o.history.push({ at: f.at, text: 'العميل بعت فيدباك: ' + (type === 'd7' ? 'تقييم أول انطباع' : 'النتيجة وNPS') }); putOrder(o);
     db.prepare('INSERT INTO feedback(id,created,data) VALUES(?,?,?)').run(f.id, f.at, JSON.stringify(f));
     return send(res, 201, { ok: true });
   }
@@ -221,7 +255,8 @@ async function api(req, res, url) {
     const sent = {}; db.prepare('SELECT key,at FROM sent').all().forEach(r => { sent[r.key] = r.at; });
     return send(res, 200, {
       me: user, products: allProducts(),
-      orders: db.prepare('SELECT data FROM orders ORDER BY seq DESC').all().map(r => JSON.parse(r.data)),
+      // fbToken is computed on the fly (never stored) so the dashboard can build signed feedback links.
+      orders: db.prepare('SELECT data FROM orders ORDER BY seq DESC').all().map(r => { const o = JSON.parse(r.data); o.fbToken = fbToken(o.id); return o; }),
       feedback: db.prepare('SELECT data FROM feedback ORDER BY created DESC').all().map(r => JSON.parse(r.data)),
       sent, settings: settings(), content: content()
     });
@@ -233,9 +268,24 @@ async function api(req, res, url) {
     const o = getOrder(mm[1]); if (!o) return send(res, 404, { error: 'not found' });
     const b = await readJson(req), t = now(), L = { new: 'جديد', confirmed: 'اتأكد', preparing: 'بيتجهز', shipped: 'اتشحن', delivered: 'اتسلم', returned: 'مرتجع', cancelled: 'ملغي' };
     if (b.status && STATUSES.includes(b.status) && b.status !== o.status) {
+      // An order "holds" stock unless it is returned or cancelled.
+      // Releasing gives the items back; un-cancelling must take them out again.
+      const holds = s => s !== 'returned' && s !== 'cancelled';
+      const delta = holds(o.status) === holds(b.status) ? 0 : holds(b.status) ? -1 : 1;
+      if (delta) {
+        db.exec('BEGIN IMMEDIATE');
+        try {
+          for (const it of o.items) {
+            if (delta < 0) {
+              const pr = db.prepare('SELECT stock FROM products WHERE id=?').get(it.pid);
+              if (!pr || pr.stock < it.qty) throw Object.assign(new Error('مفيش مخزون كفاية عشان ترجّع الأوردر ده'), { code: 409 });
+            }
+            db.prepare('UPDATE products SET stock=stock+? WHERE id=?').run(delta * it.qty, it.pid);
+          }
+          db.exec('COMMIT');
+        } catch (e) { db.exec('ROLLBACK'); throw e; }
+      }
       o.history.push({ at: t, text: `${user.name}: الحالة اتغيرت من "${L[o.status]}" لـ "${L[b.status]}"` });
-      if ((b.status === 'returned' || b.status === 'cancelled') && o.status !== 'returned' && o.status !== 'cancelled')
-        o.items.forEach(it => db.prepare('UPDATE products SET stock=stock+? WHERE id=?').run(it.qty, it.pid));
       o.status = b.status;
       if (b.status === 'delivered') { o.deliveredAt = t; o.history.push({ at: t, text: 'اتجدولت متابعات ما بعد التسليم' }); }
     }
@@ -299,6 +349,23 @@ async function api(req, res, url) {
 // ---------- static files
 const TYPES = { '.html': 'text/html; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 const ROUTES = { '/': 'index.html', '/admin': 'admin.html', '/feedback': 'feedback.html' };
+// Content-Security-Policy: tells the browser which sources are allowed to load code, styles,
+// fonts and data. If an XSS bug ever slips in, injected code still can't load outside scripts
+// or send data to another site. 'unsafe-inline' stays until Phase 2 moves the inline <script>
+// and style="" code into separate files.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src https://fonts.gstatic.com",
+  "img-src 'self' data:",
+  "connect-src 'self' https://cloudflareinsights.com",
+  "object-src 'none'", "base-uri 'none'", "form-action 'self'", "frame-ancestors 'none'"
+].join('; ');
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()'
+};
 function serveStatic(req, res, url) {
   let name = ROUTES[url.pathname.replace(/\/+$/, '') || '/'] || url.pathname.slice(1);
   if (!/^[a-z0-9-]+\.(html|png|jpg|svg|ico)$/.test(name)) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
@@ -306,7 +373,7 @@ function serveStatic(req, res, url) {
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(name);
-    res.writeHead(200, { 'Content-Type': TYPES[ext], 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', ...(name === 'admin.html' ? { 'X-Frame-Options': 'DENY', 'X-Robots-Tag': 'noindex' } : {}) });
+    res.writeHead(200, { 'Content-Type': TYPES[ext], 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400', ...SECURITY_HEADERS, ...(ext === '.html' ? { 'Content-Security-Policy': CSP } : {}), ...(name === 'admin.html' || name === 'feedback.html' ? { 'X-Robots-Tag': 'noindex' } : {}) });
     res.end(buf);
   });
 }
