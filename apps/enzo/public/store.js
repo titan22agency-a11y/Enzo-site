@@ -115,12 +115,19 @@
   /* Wordmark glides into the header on scroll */
   var wm = document.getElementById('wordmark'), space = document.getElementById('bigspace');
   var ratio = 1141/290, ANN = 40, HEAD = 72, PAD = 28, SMALL = 28, ticking = false, bigW = 0, spacerH = 0;
+  var slot = document.querySelector('.logo-slot'), endW = 0, endDx = 0;
   // Sizes only change when the window does, so measure here, not on every scroll frame.
   function measure(){
-    bigW = Math.min(980, window.innerWidth - 48);
+    var vw = document.documentElement.clientWidth; // width without the scrollbar = what left:50% uses
+    bigW = Math.min(980, vw - 48);
     spacerH = Math.round(bigW / ratio + PAD*2);
     space.style.height = spacerH + 'px';
     wm.style.width = bigW + 'px';
+    // Where the logo ends up: inside the header's logo slot, never wider than the slot.
+    // On phones the slot is narrow and not exactly centred, so we measure it instead of assuming.
+    var s = slot.getBoundingClientRect();
+    endW = Math.min(SMALL * ratio, s.width);
+    endDx = (s.left + s.width / 2) - vw / 2; // how far the slot's centre is from the page's centre
     frame();
   }
   // Each scroll frame: only a transform. The browser moves the logo on the GPU without
@@ -130,9 +137,9 @@
     var y = window.scrollY || document.documentElement.scrollTop || 0;
     var raw = Math.max(0, Math.min(1, y / spacerH));
     var p = reduce ? (raw > 0 ? 1 : 0) : (raw < .5 ? 2*raw*raw : 1 - Math.pow(-2*raw+2,2)/2); // ease-in-out
-    var startTop = ANN + HEAD + PAD - y, endTop = Math.max(0, ANN - y) + (HEAD - SMALL)/2;
-    var top = startTop + (endTop - startTop)*p, scale = 1 + (SMALL*ratio/bigW - 1)*p;
-    wm.style.transform = 'translate(-50%,' + top.toFixed(1) + 'px) scale(' + scale.toFixed(4) + ')';
+    var startTop = ANN + HEAD + PAD - y, endTop = Math.max(0, ANN - y) + (HEAD - endW/ratio)/2; // vertically centred in the header
+    var top = startTop + (endTop - startTop)*p, scale = 1 + (endW/bigW - 1)*p, dx = endDx*p;
+    wm.style.transform = 'translate(calc(-50% + ' + dx.toFixed(1) + 'px),' + top.toFixed(1) + 'px) scale(' + scale.toFixed(4) + ')';
   }
   window.addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(frame); } }, {passive:true});
   window.addEventListener('resize', measure);

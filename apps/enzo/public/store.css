@@ -179,7 +179,11 @@ footer a{color:#B8B8C2;text-decoration:none}footer a:hover{color:#fff}
   .nav.open>a,.nav.open .shop>a{display:block;padding:14px 0;border-bottom:1px solid var(--line)}
   .nav.open>a::after,.nav.open .shop>a::after{display:none}
   .nav.open .mega{display:none!important}
-  .logo-slot{flex-basis:100px}
+  /* Phone header: less padding/gap, and the logo slot takes whatever space is left
+     (the scrolled logo is sized to fit this slot in store.js, so it never covers the buttons) */
+  .wrap.hd{padding:0 16px;gap:8px}
+  .burger,.tools{flex:0 0 auto}
+  .logo-slot{flex:1 1 auto;min-width:0}
   .hero{height:auto;min-height:640px}
   .slide .wrap{flex-direction:column;justify-content:center;padding-top:40px;padding-bottom:90px;gap:24px}
   .slide .vis{height:260px;flex:none;width:100%}
@@ -187,6 +191,13 @@ footer a{color:#B8B8C2;text-decoration:none}footer a:hover{color:#fff}
   .s3 .vis img{height:auto}
   .pimg{height:360px}
   .sec{padding:72px 0}
+}
+/* very small phones: slightly smaller header buttons so the logo keeps a readable size */
+@media (max-width:400px){
+  .wrap.hd{padding:0 12px;gap:6px}
+  .burger,.tools .iconbtn{width:36px}
+  .lang{padding:0 10px}
+  .cartbtn{padding:0 4px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
