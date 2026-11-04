@@ -372,6 +372,27 @@ const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'X-Frame-Options': 'DENY',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()'
 };
+// ---------- cache busting
+// Cloudflare (and browsers) may keep CSS/JS longer than we ask. So every page links to its CSS/JS
+// with a fingerprint of the file's content: store.css?v=Ab12Cd34. When the file changes, the
+// address changes, and every browser fetches the new file at once. Unchanged files keep their
+// address and can be cached for a year.
+const versions = new Map(); // name -> { mtime, v }
+function fileVersion(name) {
+  const file = path.join(PUBLIC, name);
+  try {
+    const mtime = fs.statSync(file).mtimeMs, hit = versions.get(name);
+    if (hit && hit.mtime === mtime) return hit.v;
+    const v = crypto.createHash('sha1').update(fs.readFileSync(file)).digest('base64url').slice(0, 10);
+    versions.set(name, { mtime, v });
+    return v;
+  } catch { return null; }
+}
+const withVersions = html => html.replace(/(href|src)="([a-z0-9-]+\.(?:css|js))"/g, (m, attr, f) => {
+  const v = fileVersion(f);
+  return v ? `${attr}="${f}?v=${v}"` : m;
+});
+
 function serveStatic(req, res, url) {
   let name = ROUTES[url.pathname.replace(/\/+$/, '') || '/'] || url.pathname.slice(1);
   // Only plain file names with a known extension: no "/", no "..", so nothing outside public/ can be read.
@@ -380,12 +401,17 @@ function serveStatic(req, res, url) {
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(name);
+    if (ext === '.html') buf = Buffer.from(withVersions(buf.toString('utf8')));
     // ETag = a fingerprint of the file's content. The browser sends it back as If-None-Match;
     // if the file hasn't changed we answer "304 Not Modified" with no body, which saves bandwidth.
     const etag = '"' + crypto.createHash('sha1').update(buf).digest('base64url').slice(0, 16) + '"';
-    // HTML, CSS and JS: always check for a new version (they change on every deploy).
-    // Images rarely change: let browsers keep them for a week.
-    const cache = ext === '.html' || ext === '.css' || ext === '.js' ? 'no-cache' : 'public, max-age=604800';
+    // HTML: always check for a new version. CSS/JS requested with the right ?v= fingerprint:
+    // that exact content never changes, so it can be cached for a year ("immutable").
+    // CSS/JS without it: check every time. Images: keep for a week.
+    const versioned = (ext === '.css' || ext === '.js') && url.searchParams.get('v') === fileVersion(name);
+    const cache = ext === '.html' ? 'no-cache'
+      : versioned ? 'public, max-age=31536000, immutable'
+      : ext === '.css' || ext === '.js' ? 'no-cache' : 'public, max-age=604800';
     if (req.headers['if-none-match'] === etag) { res.writeHead(304, { ETag: etag, 'Cache-Control': cache }); return res.end(); }
     res.writeHead(200, { 'Content-Type': TYPES[ext], ETag: etag, 'Cache-Control': cache, ...SECURITY_HEADERS, ...(ext === '.html' ? { 'Content-Security-Policy': CSP } : {}), ...(name === 'admin.html' || name === 'feedback.html' ? { 'X-Robots-Tag': 'noindex' } : {}) });
     res.end(req.method === 'HEAD' ? undefined : buf); // HEAD asks for headers only
